@@ -1,6 +1,5 @@
 <?php
   // Create a register.php page that has a basic register form (username, password, submit)
- session_start();
 ?>
 <!DOCTYPE html>
 <html>
@@ -28,7 +27,7 @@
       // delete session 
       session_destroy();
     ?>
-    <form action="/register_validate.php" method="post">
+    <form action="/create/verify" method="post">
       <label for="username">Username:</label>
       <br>
       <input type="text" id="username" name="username">
