@@ -30,10 +30,16 @@ class User {
           $statement->execute();
           $rows = $statement->fetch(PDO::FETCH_ASSOC);
   		    // print_r($rows['password']);
+
+          // log all login attempts 
+          $log_statement = $db->prepare("insert into log (username, attempt, time) values (?, ?, ?);");
+          $login_time = date('Y-m-d H:i:s');
+          
   		if (password_verify($password, $rows['password'])) {
   			$_SESSION['auth'] = 1;
   			$_SESSION['username'] = ucwords($username);
   			unset($_SESSION['failedAuth']);
+        $log_statement->execute([$username, 'good', $login_time]);
   			header('Location: /home');
   			die;
   		} else {
@@ -42,6 +48,9 @@ class User {
   			} else {
   				$_SESSION['failedAuth'] = 1;
   			}
+        // print_r($login_time);
+        $log_statement -> execute([$username, 'bad', $login_time]);
+        
   			header('Location: /login');
   			die;
   		}
