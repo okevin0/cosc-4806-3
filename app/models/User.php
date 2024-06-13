@@ -36,19 +36,30 @@ class User {
           $login_time = date('Y-m-d H:i:s');
           
   		if (password_verify($password, $rows['password'])) {
-  			$_SESSION['auth'] = 1;
-  			$_SESSION['username'] = ucwords($username);
-  			unset($_SESSION['failedAuth']);
-        $log_statement->execute([$username, 'good', $login_time]);
-  			header('Location: /home');
-  			die;
+  			
+        //after 3 unsuccessful login attempts, lock the user out for 60 seconds 
+        $bad_attempts = $this->count_bad_attempt($username);
+        $last_bad_attempt = $this->get_last_bad_attempt_time($username);
+        
+        if ($bad_attempts >= 3 && strtotime($last_bad_attempt) > (time() - 60)) {
+          // print_r("lock");
+          return 'lock';
+        } else {
+          $_SESSION['auth'] = 1;
+          $_SESSION['username'] = ucwords($username);
+          unset($_SESSION['failedAuth']);
+          
+          $log_statement->execute([$username, 'good', $login_time]);
+    			header('Location: /home');
+    			die;
+        }
   		} else {
   			if(isset($_SESSION['failedAuth'])) {
   				$_SESSION['failedAuth'] ++; //increment
   			} else {
   				$_SESSION['failedAuth'] = 1;
   			}
-        // print_r($login_time);
+
         $log_statement -> execute([$username, 'bad', $login_time]);
         
   			header('Location: /login');
@@ -81,6 +92,23 @@ class User {
       // user exist
       return $rows;
     }  
+  }
+
+  // check attempt
+  public function count_bad_attempt ($username) {
+    $db = db_connect();
+    $statement = $db->prepare("select count(*) as count from log where username = ? and attempt = 'bad' and time >= date_sub(now(), interval 60 second);");
+    $statement->execute([$username]);
+    $rows = $statement->fetch(PDO::FETCH_ASSOC);
+    return $rows['count'];
+  }
+
+  public function get_last_bad_attempt_time ($username) {
+    $db = db_connect();
+    $statement = $db->prepare("select time from log where username = ? and attempt = 'bad' order by time desc limit 1;");
+    $statement->execute([$username]);
+    $rows = $statement->fetch(PDO::FETCH_ASSOC);
+    return $rows['time'];
   }
 
 }

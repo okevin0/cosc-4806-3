@@ -7,7 +7,12 @@
             </div>
         </div>
     </div>
-
+<?php
+	// only print when lock user
+	if(isset($_SESSION['lock']) && $_SESSION['lock'] == 1 ) {
+		echo "<br />You accound is locked, please try after 60 seconds.";
+	}
+?>
 <div class="row">
     <div class="col-sm-auto">
 		<form action="/login/verify" method="post" >

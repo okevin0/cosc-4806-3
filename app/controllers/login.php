@@ -11,7 +11,12 @@ class Login extends Controller {
 			$password = $_REQUEST['password'];
 		
 			$user = $this->model('User');
-			$user->authenticate($username, $password); 
+			$isLock = $user->authenticate($username, $password); 
+
+			if($isLock == 'lock') {
+				$_SESSION['lock'] = 1;
+				$this->view('login/index');
+			}
     }
 
 }
