@@ -1,13 +1,8 @@
-<?php
-  // Create a register.php page that has a basic register form (username, password, submit)
-?>
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Create New Account</title>
-  </head>
-  <body>
+<?php require_once 'app/views/templates/headerPublic.php'?>
+<div class="align-items-center d-flex justify-content-center">
+ <div>
     <h1>Create New Account</h1>
+    <div class="btn-outline-danger">
     <?php
       // only print when new user exist
       if(isset($_SESSION['user_exist']) && $_SESSION['user_exist'] > 0 ) {
@@ -27,21 +22,24 @@
       // delete session 
       session_destroy();
     ?>
+    </div>
     <form action="/create/verify" method="post">
-      <label for="username">Username:</label>
-      <br>
-      <input type="text" id="username" name="username">
-      <br>
-      <label for="password">Password:</label>
-      <br>
-      <input type="password" id="password" name="password">
-      <br>
-      <label for="confirm password">Confirm Password:</label>
-      <br>
-      <input type="password" id="confirm_password" name="confirm password">
-      <br><br>
-      <input type="submit" value="Submit">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" id="username" name="username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" class="form-control" id="password" name="password">
+      </div>
+      <div class="form-group">
+        <label for="confirm password">Confirm Password:</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm password">
+      </div>
+      <br />
+      <input type="submit" value="Submit" class="btn btn-primary" style="width: 100%;" > 
     </form> 
-
-  </body>
-</html>
+   </div>
+  </div>
+<br />
+  <?php require_once 'app/views/templates/footer.php' ?>
